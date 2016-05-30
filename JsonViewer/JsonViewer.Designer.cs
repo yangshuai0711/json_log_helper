@@ -39,6 +39,7 @@ namespace EPocalipse.Json.Viewer
             this.mnuCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuCopyName = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuCopyValue = new System.Windows.Forms.ToolStripMenuItem();
+            this.添加到列表ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imgList = new System.Windows.Forms.ImageList(this.components);
             this.pnlFind = new System.Windows.Forms.Panel();
             this.btnCloseFind = new System.Windows.Forms.Button();
@@ -66,6 +67,7 @@ namespace EPocalipse.Json.Viewer
             this.removeSpecialCharsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnViewSelected = new System.Windows.Forms.ToolStripButton();
             this.lblError = new System.Windows.Forms.LinkLabel();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.spcViewer.Panel1.SuspendLayout();
             this.spcViewer.Panel2.SuspendLayout();
             this.spcViewer.SuspendLayout();
@@ -123,13 +125,15 @@ namespace EPocalipse.Json.Viewer
             // 
             this.mnuTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuFind,
+            this.toolStripMenuItem2,
             this.mnuExpandAll,
             this.toolStripMenuItem1,
             this.mnuCopy,
             this.mnuCopyName,
-            this.mnuCopyValue});
+            this.mnuCopyValue,
+            this.添加到列表ToolStripMenuItem});
             this.mnuTree.Name = "mnuTree";
-            this.mnuTree.Size = new System.Drawing.Size(154, 130);
+            this.mnuTree.Size = new System.Drawing.Size(154, 200);
             this.mnuTree.Opening += new System.ComponentModel.CancelEventHandler(this.mnuTree_Opening);
             // 
             // mnuFind
@@ -171,6 +175,13 @@ namespace EPocalipse.Json.Viewer
             this.mnuCopyValue.Size = new System.Drawing.Size(153, 24);
             this.mnuCopyValue.Text = "复制属性值";
             this.mnuCopyValue.Click += new System.EventHandler(this.mnuCopyValue_Click);
+            // 
+            // 添加到列表ToolStripMenuItem
+            // 
+            this.添加到列表ToolStripMenuItem.Name = "添加到列表ToolStripMenuItem";
+            this.添加到列表ToolStripMenuItem.Size = new System.Drawing.Size(153, 24);
+            this.添加到列表ToolStripMenuItem.Text = "添加到列表";
+            this.添加到列表ToolStripMenuItem.Click += new System.EventHandler(this.添加到列表ToolStripMenuItem_Click);
             // 
             // imgList
             // 
@@ -227,9 +238,9 @@ namespace EPocalipse.Json.Viewer
             this.lblFind.Location = new System.Drawing.Point(4, 10);
             this.lblFind.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFind.Name = "lblFind";
-            this.lblFind.Size = new System.Drawing.Size(39, 15);
+            this.lblFind.Size = new System.Drawing.Size(37, 15);
             this.lblFind.TabIndex = 0;
-            this.lblFind.Text = "&Find";
+            this.lblFind.Text = "&查找";
             // 
             // toolStrip3
             // 
@@ -286,6 +297,7 @@ namespace EPocalipse.Json.Viewer
             this.hisListBox1.Size = new System.Drawing.Size(298, 624);
             this.hisListBox1.TabIndex = 7;
             this.hisListBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.hisListBox1_MouseDoubleClick);
+            this.hisListBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.hisListBox1_MouseMove);
             // 
             // tabControl
             // 
@@ -468,6 +480,13 @@ namespace EPocalipse.Json.Viewer
             this.lblError.VisitedLinkColor = System.Drawing.Color.Red;
             this.lblError.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblError_LinkClicked);
             // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(153, 24);
+            this.toolStripMenuItem2.Text = "收缩所有";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
             // JsonViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -534,6 +553,8 @@ namespace EPocalipse.Json.Viewer
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
+        private System.Windows.Forms.ToolStripMenuItem 添加到列表ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
 
     }
 }
