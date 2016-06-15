@@ -55,6 +55,7 @@
             this.splitContainer2.Panel1.AutoScroll = true;
             this.splitContainer2.Panel1.Controls.Add(this.compTreeViewLeft);
             this.splitContainer2.Panel1.Controls.Add(this.label1);
+            this.splitContainer2.Panel1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.splitContainer2_Panel_Scroll);
             // 
             // splitContainer2.Panel2
             // 
@@ -64,6 +65,7 @@
             this.splitContainer2.Size = new System.Drawing.Size(900, 668);
             this.splitContainer2.SplitterDistance = 446;
             this.splitContainer2.TabIndex = 8;
+            this.splitContainer2.Scroll += new System.Windows.Forms.ScrollEventHandler(this.splitContainer2_Panel_Scroll);
             // 
             // compTreeViewLeft
             // 
@@ -148,6 +150,7 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(900, 668);
             this.panel2.TabIndex = 6;
+            this.panel2.Scroll += new System.Windows.Forms.ScrollEventHandler(this.splitContainer2_Panel_Scroll);
             // 
             // CompareWindow
             // 

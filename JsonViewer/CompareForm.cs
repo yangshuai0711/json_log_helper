@@ -74,6 +74,7 @@ namespace compareWindow
         private void showNodeDiff(TreeNode node)
         {
             node.EnsureVisible();
+            node.ExpandAll();
             List<TreeNode> flash = new List<TreeNode>(2);
             flash.Add(node);
             fillAllSubNodesList(flash, node);
@@ -81,10 +82,11 @@ namespace compareWindow
             if (map.ContainsKey(node))
             {
                 TreeNode node2 = map[node];
-                node2.EnsureVisible();
                 Dictionary<TreeNode, TreeNode> map2 = node.TreeView == compTreeViewLeft ? diffRefMapRight : diffRefMapLeft;
                 if (map2.ContainsKey(node2) && map2[node2] == node)
                 {
+                    node2.EnsureVisible();
+                    node2.ExpandAll();
                     flash.Add(node2);
                     fillAllSubNodesList(flash, node2);
                 }
@@ -228,7 +230,7 @@ namespace compareWindow
                 AddNode(treeView.Nodes, tree.Root);
                 JsonViewerTreeNode node = (JsonViewerTreeNode)treeView.Nodes[0];
                 defaultNodeColor = node.BackColor;
-                if (node.Level < 2) { node.Expand(); }
+                node.ExpandAll();
                 compTreeViewLeft.SelectedNode = node;
                 treeView.Sort();//很关键，否则无法正常比较
 
@@ -455,6 +457,11 @@ namespace compareWindow
         private void CompareWindow_Click(object sender, EventArgs e)
         {
             cancelPrevHighLight();
+        }
+
+        private void splitContainer2_Panel_Scroll(object sender, ScrollEventArgs e)
+        {
+            //this.Text = e.OldValue+","+e.NewValue;
         }
 
 

@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Collections;
 using System.IO;
+using System.Configuration;
+using System.Text.RegularExpressions;
 
 namespace EPocalipse.Json.Viewer
 {
@@ -75,6 +77,18 @@ namespace EPocalipse.Json.Viewer
             return true;
         }
 
+        private static string repalceNodesTitleText(string input) {
+
+           string src =  ConfigurationManager.AppSettings["string.for.treetitle.to.replace"];
+           if (!String.IsNullOrEmpty(src))
+           {
+               return Regex.Replace(input, src, "");
+           }
+           else {
+               return input;
+           }
+        }
+
         public static JavaScriptObject splitJson(string json)
         {
             Stack<Range> sta = new Stack<Range>();
@@ -95,22 +109,6 @@ namespace EPocalipse.Json.Viewer
                     if (IsJson(subStr))
                     {
                         addToRange(rangeList,seg);
-                        //string posLog = "";
-                        //string strLog = "";
-                        //LinkedListNode<Range> temp = rangeList.Count>0?rangeList.First:null;
-                        //while (temp != null)
-                        //{
-                        //    string line = json.Substring(temp.Value.start, temp.Value.end - temp.Value.start);
-                        //    posLog += "(" + temp.Value.start + "," + temp.Value.end + "),";
-                        //    strLog += "【" + line + "】";
-                        //    temp = temp.Next;
-                       // }
-                        //Console.Error.WriteLine("区间列表:" + posLog);
-                        //Console.Error.WriteLine("字串列表:" + strLog);
-                    }
-                    else
-                    {
-                        //Console.Error.WriteLine("此货不是json:" + subStr);
                     }
                     sta.Pop();
                 }
@@ -127,6 +125,7 @@ namespace EPocalipse.Json.Viewer
             {
                 object subJson = JavaScriptConvert.DeserializeObject(json.Substring(cur.Value.start, cur.Value.end - cur.Value.start));
                 string key = json.Substring(lastPos, cur.Value.start - lastPos);
+                key = repalceNodesTitleText(key);
                 while (objs.ContainsKey(key)||key.Length<1) 
                 {
                     key = key + " ";
@@ -236,9 +235,11 @@ namespace EPocalipse.Json.Viewer
                 JavaScriptArray javaScriptArray = jsonObject as JavaScriptArray;
                 if (javaScriptArray != null)
                 {
+                    int len = javaScriptArray.Count.ToString().Length;
+
                     for (int i = 0; i < javaScriptArray.Count; i++)
                     {
-                        obj.Fields.Add(ConvertToObject("[" + i.ToString() + "]", javaScriptArray[i]));
+                        obj.Fields.Add(ConvertToObject("[" + i.ToString("D"+len) + "]", javaScriptArray[i]));
                     }
                 }
             }

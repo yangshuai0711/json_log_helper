@@ -34,6 +34,7 @@ namespace EPocalipse.Json.Viewer
             this.tvJson = new System.Windows.Forms.TreeView();
             this.mnuTree = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuFind = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuExpandAll = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuCopy = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,9 +56,6 @@ namespace EPocalipse.Json.Viewer
             this.pageTextView = new System.Windows.Forms.TabPage();
             this.txtJson = new System.Windows.Forms.RichTextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnPaste = new System.Windows.Forms.ToolStripButton();
-            this.btnCopy = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnFormat = new System.Windows.Forms.ToolStripButton();
             this.btnStrip = new System.Windows.Forms.ToolStripSplitButton();
             this.btnStripToCurly = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,7 +65,6 @@ namespace EPocalipse.Json.Viewer
             this.removeSpecialCharsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnViewSelected = new System.Windows.Forms.ToolStripButton();
             this.lblError = new System.Windows.Forms.LinkLabel();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.spcViewer.Panel1.SuspendLayout();
             this.spcViewer.Panel2.SuspendLayout();
             this.spcViewer.SuspendLayout();
@@ -133,7 +130,7 @@ namespace EPocalipse.Json.Viewer
             this.mnuCopyValue,
             this.添加到列表ToolStripMenuItem});
             this.mnuTree.Name = "mnuTree";
-            this.mnuTree.Size = new System.Drawing.Size(154, 200);
+            this.mnuTree.Size = new System.Drawing.Size(154, 178);
             this.mnuTree.Opening += new System.ComponentModel.CancelEventHandler(this.mnuTree_Opening);
             // 
             // mnuFind
@@ -142,6 +139,13 @@ namespace EPocalipse.Json.Viewer
             this.mnuFind.Size = new System.Drawing.Size(153, 24);
             this.mnuFind.Text = "搜索";
             this.mnuFind.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(153, 24);
+            this.toolStripMenuItem2.Text = "收缩所有";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // mnuExpandAll
             // 
@@ -353,9 +357,6 @@ namespace EPocalipse.Json.Viewer
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnPaste,
-            this.btnCopy,
-            this.toolStripSeparator1,
             this.btnFormat,
             this.btnStrip,
             this.toolStripSplitButton1,
@@ -366,35 +367,9 @@ namespace EPocalipse.Json.Viewer
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // btnPaste
-            // 
-            this.btnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnPaste.Image = ((System.Drawing.Image)(resources.GetObject("btnPaste.Image")));
-            this.btnPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnPaste.Name = "btnPaste";
-            this.btnPaste.Size = new System.Drawing.Size(43, 24);
-            this.btnPaste.Text = "&粘贴";
-            this.btnPaste.Click += new System.EventHandler(this.btnPaste_Click);
-            // 
-            // btnCopy
-            // 
-            this.btnCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnCopy.Image = ((System.Drawing.Image)(resources.GetObject("btnCopy.Image")));
-            this.btnCopy.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnCopy.Name = "btnCopy";
-            this.btnCopy.Size = new System.Drawing.Size(43, 24);
-            this.btnCopy.Text = "&复制";
-            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
-            // 
             // btnFormat
             // 
             this.btnFormat.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnFormat.Image = ((System.Drawing.Image)(resources.GetObject("btnFormat.Image")));
             this.btnFormat.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnFormat.Name = "btnFormat";
             this.btnFormat.Size = new System.Drawing.Size(58, 24);
@@ -407,7 +382,6 @@ namespace EPocalipse.Json.Viewer
             this.btnStrip.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnStripToCurly,
             this.btnStripToSqr});
-            this.btnStrip.Image = ((System.Drawing.Image)(resources.GetObject("btnStrip.Image")));
             this.btnStrip.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnStrip.Name = "btnStrip";
             this.btnStrip.Size = new System.Drawing.Size(55, 24);
@@ -434,7 +408,6 @@ namespace EPocalipse.Json.Viewer
             this.toolStripSplitButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removenToolStripMenuItem,
             this.removeSpecialCharsToolStripMenuItem});
-            this.toolStripSplitButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSplitButton1.Image")));
             this.toolStripSplitButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripSplitButton1.Name = "toolStripSplitButton1";
             this.toolStripSplitButton1.Size = new System.Drawing.Size(55, 24);
@@ -459,7 +432,6 @@ namespace EPocalipse.Json.Viewer
             // 
             this.btnViewSelected.CheckOnClick = true;
             this.btnViewSelected.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnViewSelected.Image = ((System.Drawing.Image)(resources.GetObject("btnViewSelected.Image")));
             this.btnViewSelected.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnViewSelected.Name = "btnViewSelected";
             this.btnViewSelected.Size = new System.Drawing.Size(88, 24);
@@ -479,13 +451,6 @@ namespace EPocalipse.Json.Viewer
             this.lblError.TabIndex = 5;
             this.lblError.VisitedLinkColor = System.Drawing.Color.Red;
             this.lblError.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblError_LinkClicked);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(153, 24);
-            this.toolStripMenuItem2.Text = "收缩所有";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // JsonViewer
             // 
@@ -524,11 +489,6 @@ namespace EPocalipse.Json.Viewer
         private System.Windows.Forms.TabPage pageTreeView;
         private System.Windows.Forms.TabPage pageTextView;
         private System.Windows.Forms.LinkLabel lblError;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton btnFormat;
-        private System.Windows.Forms.ToolStripSplitButton btnStrip;
-        private System.Windows.Forms.ToolStripMenuItem btnStripToCurly;
-        private System.Windows.Forms.ToolStripMenuItem btnStripToSqr;
         private System.Windows.Forms.Panel pnlFind;
         private System.Windows.Forms.TextBox txtFind;
         private System.Windows.Forms.Label lblFind;
@@ -536,16 +496,9 @@ namespace EPocalipse.Json.Viewer
         private System.Windows.Forms.ContextMenuStrip mnuTree;
         private System.Windows.Forms.ToolStripMenuItem mnuFind;
         private System.Windows.Forms.ToolStripMenuItem mnuExpandAll;
-        private System.Windows.Forms.ToolStripButton btnPaste;
-        private System.Windows.Forms.ToolStripButton btnCopy;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem mnuCopy;
         private System.Windows.Forms.ToolStripMenuItem mnuCopyValue;
-        private System.Windows.Forms.ToolStripSplitButton toolStripSplitButton1;
-        private System.Windows.Forms.ToolStripMenuItem removenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem removeSpecialCharsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton btnViewSelected;
         private System.Windows.Forms.RichTextBox txtJson;
         private System.Windows.Forms.ToolStripMenuItem mnuCopyName;
         private System.Windows.Forms.CheckedListBox hisListBox1;
@@ -555,6 +508,15 @@ namespace EPocalipse.Json.Viewer
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.ToolStripMenuItem 添加到列表ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripButton btnFormat;
+        private System.Windows.Forms.ToolStripSplitButton btnStrip;
+        private System.Windows.Forms.ToolStripMenuItem btnStripToCurly;
+        private System.Windows.Forms.ToolStripMenuItem btnStripToSqr;
+        private System.Windows.Forms.ToolStripSplitButton toolStripSplitButton1;
+        private System.Windows.Forms.ToolStripMenuItem removenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeSpecialCharsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton btnViewSelected;
 
     }
 }

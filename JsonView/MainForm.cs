@@ -3,7 +3,8 @@ using System.Windows.Forms;
 using EPocalipse.Json.Viewer;
 using System.IO;
 using System.Runtime.InteropServices;   //调用WINDOWS API函数时要用到
-//写入注册表时要用到
+using System.Configuration;
+using System.Collections.Generic;
 
 namespace EPocalipse.Json.JsonView
 {
@@ -24,6 +25,8 @@ namespace EPocalipse.Json.JsonView
             k_hook.KeyDownEvent += new KeyEventHandler(hook_KeyDown);//钩住键按下
             k_hook.Start();//安装键盘钩子
             //this.notifyIcon1.Visible = true;
+            string src = ConfigurationManager.AppSettings["string.for.treetitle.to.replace"];
+            this.toolStripTextBox2.Text = src == null ? "" : src;
 
         }
 
@@ -346,6 +349,36 @@ namespace EPocalipse.Json.JsonView
         private void JsonViewer_Load(object sender, EventArgs e)
         {
 
+        }
+
+        public void setConfig(Dictionary<string, string> cfgMap)
+        {
+            System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            foreach (string key in cfgMap.Keys)
+            {
+                if (config.AppSettings.Settings[key] == null)
+                {
+                    config.AppSettings.Settings.Add(key, cfgMap[key]);
+                }
+                else { 
+                    config.AppSettings.Settings[key].Value = cfgMap[key];
+                }
+            }
+            config.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("appSettings");
+        }
+
+
+        private void toolStripTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            Dictionary<string, string> cfg = new Dictionary<string, string>(1);
+            cfg.Add("string.for.treetitle.to.replace", ((ToolStripTextBox)sender).Text);
+            setConfig(cfg);
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new helpForm().Show();
         }
 
         //响应重复实例激活窗口通知

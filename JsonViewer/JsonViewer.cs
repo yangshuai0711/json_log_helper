@@ -12,6 +12,7 @@ using System.Threading;
 using EPocalipse.Json.Viewer.Properties;
 using System.Collections;
 using compareWindow;
+using System.Configuration;
 
 namespace EPocalipse.Json.Viewer
 {
@@ -70,20 +71,13 @@ namespace EPocalipse.Json.Viewer
             }
         }
 
-        private void updateHisBoxTitle(int index) {
-            string title = (String)hisListBox1.Items[index];
-            int pos = title.IndexOf("→") + 1;
-            title = DateTime.Now.ToLongTimeString() + "→" + (pos>=title.Length?"":title.Substring(pos));
-            hisListBox1.Items[index] = title;
-            return;
-        }
+
         private string prevText = null;
 
-        private void Redraw()
+        private void Redraw(bool moveHisPos = true)
         {
-            if (_json == prevText) 
+            if (_json == prevText)
             {
-                updateHisBoxTitle(hisListBox1.Items.Count-1);
                 return;
             }
             try
@@ -94,20 +88,26 @@ namespace EPocalipse.Json.Viewer
                     Reset();
                     if (!String.IsNullOrEmpty(_json))
                     {
-                    
                         JsonObjectTree tree = null;
-                       if (hisJsonMap.ContainsKey(_json)) 
+                        if (hisJsonMap.ContainsKey(_json))
                         {
                             tree = hisJsonMap[_json];
                             int index = hisStringList.IndexOf(_json);
-                            if (index >= 0) {
-                                hisStringList.Add(hisStringList[index]);
-                                hisStringList.RemoveAt(index);
-                                hisListBox1.Items.Add(hisListBox1.Items[index]);
-                                hisListBox1.Items.RemoveAt(index);
-                                hisListBox1.SetSelected(hisListBox1.Items.Count-1, true);
-                                updateHisBoxTitle(hisListBox1.Items.Count - 1);
-                                lastSelectHisItem = (string)hisListBox1.Items[hisListBox1.Items.Count - 1];
+                            if (index >= 0)
+                            {
+                                int operIndex = index;
+                                if (moveHisPos)
+                                {
+                                    bool check = hisListBox1.CheckedItems.Contains(hisListBox1.Items[index]);
+                                    hisStringList.Add(hisStringList[index]);
+                                    hisStringList.RemoveAt(index);
+                                    hisListBox1.Items.Add(hisListBox1.Items[index]);
+                                    hisListBox1.Items.RemoveAt(index);
+                                    operIndex = hisListBox1.Items.Count - 1;
+                                    hisListBox1.SetItemChecked(operIndex, check);
+                                }
+                                hisListBox1.SetSelected(operIndex, true);
+                                lastSelectHisItem = (string)hisListBox1.Items[operIndex];
                             }
                         }
                         else
@@ -130,7 +130,7 @@ namespace EPocalipse.Json.Viewer
                                 hisListBox1.Items.RemoveAt(0);
                             }
                         }
-                        
+
                         VisualizeJsonTree(tree);
                     }
                 }
@@ -204,21 +204,23 @@ namespace EPocalipse.Json.Viewer
             for (int i = 0; i < 20; i++)
             {
                 total += levelNodesCount[i];
-                if (total * 18 > tvJson.Bounds.Height*1)
-                { 
+                if (total * 18 > tvJson.Bounds.Height * 1)
+                {
                     break;
                 }
-                else {
+                else
+                {
                     index = i;
                 }
-               
+
             }
-            expandSubNodes(node, index-1<0?0:index-1);
+            expandSubNodes(node, index - 1 < 0 ? 0 : index - 1);
             //node.TreeView.Sort();
             tvJson.SelectedNode = node;
         }
 
-        public static void expandSubNodes(TreeNode node ,int level){
+        public static void expandSubNodes(TreeNode node, int level)
+        {
             if (node.Level > level)
             {
                 node.Collapse();
@@ -226,34 +228,34 @@ namespace EPocalipse.Json.Viewer
             }
             node.Expand();
             if (node.Level > level - 1) return;
-            if (node.Nodes != null && node.Nodes.Count > 0) 
+            if (node.Nodes != null && node.Nodes.Count > 0)
             {
                 TreeNodeCollection subs = node.Nodes;
-                for (int i = 0; i < node.Nodes.Count;i++ )
+                for (int i = 0; i < node.Nodes.Count; i++)
                 {
                     expandSubNodes(node.Nodes[i], level);
                 }
             }
         }
 
-        private int[] levelNodesCount ;
-        
+        private int[] levelNodesCount;
+
 
         private void AddNode(TreeNodeCollection nodes, JsonObject jsonObject)
         {
             JsonViewerTreeNode newNode = new JsonViewerTreeNode(jsonObject);
-            
+
             nodes.Add(newNode);
             newNode.Text = jsonObject.Text.Trim();
             newNode.Tag = jsonObject;
             newNode.ImageIndex = (int)jsonObject.JsonType;
             newNode.SelectedImageIndex = newNode.ImageIndex;
-            
+
             foreach (JsonObject field in jsonObject.Fields)
             {
                 AddNode(newNode.Nodes, field);
             }
-           
+
             levelNodesCount[newNode.Level]++;
         }
 
@@ -438,24 +440,55 @@ namespace EPocalipse.Json.Viewer
             try
             {
                 string json = txtJson.Text;
-                JsonSerializer s = new JsonSerializer();
-                JsonReader reader = new JsonReader(new StringReader(json));
-                Object jsonObject = s.Deserialize(reader);
-                if (jsonObject != null)
-                {
-                    StringWriter sWriter = new StringWriter();
-                    JsonWriter writer = new JsonWriter(sWriter);
-                    writer.Formatting = Formatting.Indented;
-                    writer.Indentation = 4;
-                    writer.IndentChar = ' ';
-                    s.Serialize(writer, jsonObject);
-                    txtJson.Text = sWriter.ToString();
+                if (!hisJsonMap.ContainsKey(json)) {
+                    return;
                 }
+                JsonObjectTree tree = hisJsonMap[json];
+                StringBuilder sb = new StringBuilder();
+                JavaScriptObject obj = (JavaScriptObject)tree.Root.Value;
+                foreach (string key in obj.Keys)
+                {
+
+                    sb.Append(key).Append("\n").Append(formatJson(obj[key])).Append("\n");
+                }
+                txtJson.Text = sb.ToString();
             }
             catch (Exception ex)
             {
                 ShowException(ex);
             }
+        }
+
+        private string formatJson(string json)
+        {
+
+            JsonSerializer s = new JsonSerializer();
+            JsonReader reader = new JsonReader(new StringReader(json));
+            Object jsonObject = s.Deserialize(reader);
+            if (jsonObject != null)
+            {
+                StringWriter sWriter = new StringWriter();
+                JsonWriter writer = new JsonWriter(sWriter);
+                writer.Formatting = Formatting.Indented;
+                writer.Indentation = 4;
+                writer.IndentChar = ' ';
+                s.Serialize(writer, jsonObject);
+                return sWriter.ToString();
+            }
+            return "";
+        }
+
+        private string formatJson(Object jsonObject)
+        {
+
+            JsonSerializer s = new JsonSerializer();
+            StringWriter sWriter = new StringWriter();
+            JsonWriter writer = new JsonWriter(sWriter);
+            writer.Formatting = Formatting.Indented;
+            writer.Indentation = 4;
+            writer.IndentChar = ' ';
+            s.Serialize(writer, jsonObject);
+            return sWriter.ToString();
         }
 
         private void ShowException(Exception e)
@@ -487,7 +520,7 @@ namespace EPocalipse.Json.Viewer
 
         private void tvJson_AfterSelect(object sender, TreeViewEventArgs e)
         {
-           
+
         }
 
         private JsonViewerTreeNode GetSelectedTreeNode()
@@ -497,7 +530,7 @@ namespace EPocalipse.Json.Viewer
 
         private void tvJson_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            
+
         }
 
 
@@ -689,7 +722,7 @@ namespace EPocalipse.Json.Viewer
             _json = hisStringList[hisListBox1.SelectedIndex];
             txtJson.Text = _json;
             lastSelectHisItem = (string)hisListBox1.SelectedItem;
-            Redraw();
+            Redraw(false);
         }
 
 
@@ -697,31 +730,32 @@ namespace EPocalipse.Json.Viewer
         //对比功能
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-           CheckedListBox.CheckedIndexCollection checkeds = hisListBox1.CheckedIndices;
-           if (checkeds.Count == 2)
-           {
-               JsonObjectTree tree1 = hisJsonMap[hisStringList[checkeds[0]]];
-               JsonObjectTree tree2 = hisJsonMap[hisStringList[checkeds[1]]];
-               CheckedListBox.CheckedItemCollection items = hisListBox1.CheckedItems;
-               KeyValuePair<string, JsonObjectTree>[] data = new KeyValuePair<string, JsonObjectTree>[]{
+            CheckedListBox.CheckedIndexCollection checkeds = hisListBox1.CheckedIndices;
+            if (checkeds.Count == 2)
+            {
+                JsonObjectTree tree1 = hisJsonMap[hisStringList[checkeds[0]]];
+                JsonObjectTree tree2 = hisJsonMap[hisStringList[checkeds[1]]];
+                CheckedListBox.CheckedItemCollection items = hisListBox1.CheckedItems;
+                KeyValuePair<string, JsonObjectTree>[] data = new KeyValuePair<string, JsonObjectTree>[]{
                new KeyValuePair<string, JsonObjectTree>((string)items[0],tree1),new KeyValuePair<string, JsonObjectTree>((string)items[1],tree2)
                };
-               CompareWindow com = new CompareWindow(data);
-               com.Show();
-               //com.markDiff();
-           }
-           else {
-               MessageBox.Show("请选择两条记录");
-           }
+                CompareWindow com = new CompareWindow(data);
+                com.Show();
+                //com.markDiff();
+            }
+            else
+            {
+                MessageBox.Show("请选择两条记录");
+            }
         }
         //删除功能
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             CheckedListBox.CheckedIndexCollection checkeds = hisListBox1.CheckedIndices;
             CheckedListBox.CheckedItemCollection checkedItems = hisListBox1.CheckedItems;
-            if (checkeds.Count >0)
+            if (checkeds.Count > 0)
             {
-                for (int i = checkeds.Count-1; i >=0; i--)
+                for (int i = checkeds.Count - 1; i >= 0; i--)
                 {
                     hisJsonMap.Remove(hisStringList[checkeds[i]]);
                     hisStringList.RemoveAt(checkeds[i]);
@@ -729,10 +763,11 @@ namespace EPocalipse.Json.Viewer
                     if (item == lastSelectHisItem)
                     {
                         Reset();
+                        txtJson.Clear();
                     }
                     prevText = null;
                     hisListBox1.Items.RemoveAt(checkeds[i]);
-                    
+
                 }
             }
             else
@@ -744,7 +779,8 @@ namespace EPocalipse.Json.Viewer
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             bool falg = hisListBox1.CheckedIndices.Count > 0 ? false : true;
-            for (int i = 0; i < hisListBox1.Items.Count; i++) {
+            for (int i = 0; i < hisListBox1.Items.Count; i++)
+            {
                 hisListBox1.SetItemChecked(i, falg);
             }
         }
@@ -760,23 +796,25 @@ namespace EPocalipse.Json.Viewer
                 return;
             }
             string txt = hisListBox1.GetItemText(hisListBox1.Items[idx]); //获取项文本 
-            if(txt!=toolTip.GetToolTip(hisListBox1)){
+            if (txt != toolTip.GetToolTip(hisListBox1))
+            {
                 toolTip.SetToolTip(hisListBox1, txt);
             }
-            
+
         }
 
         private void 添加到列表ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             JsonViewerTreeNode node = GetSelectedTreeNode();
-            if (node == GetRootNode()) {
+            if (node == GetRootNode())
+            {
                 MessageBox.Show("这么干有啥意义？");
             }
             if (node != null && node.Tag != null)
             {
                 JsonObject obj = node.Tag as JsonObject;
                 string valueString = obj.Id;
-                valueString+= obj.Value == null ? "" : (obj.JsonType == JsonType.Value ? ":"+JavaScriptConvert.ToString(obj.Value) : JavaScriptConvert.SerializeObject(obj.Value));
+                valueString += obj.Value == null ? "" : (obj.JsonType == JsonType.Value ? ":" + JavaScriptConvert.ToString(obj.Value) : JavaScriptConvert.SerializeObject(obj.Value));
                 txtJson.Text = valueString;
                 Redraw();
             }
@@ -790,7 +828,7 @@ namespace EPocalipse.Json.Viewer
                 if (tvJson.SelectedNode != null)
                 {
                     TreeNode topNode = tvJson.TopNode;
-                    tvJson.SelectedNode.Collapse(false) ;
+                    tvJson.SelectedNode.Collapse(false);
                     tvJson.TopNode = topNode;
                 }
             }
